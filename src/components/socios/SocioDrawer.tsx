@@ -14,6 +14,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
+import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
 import {
   Select,
   SelectContent,
@@ -88,7 +89,7 @@ export function SocioDrawer({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-full overflow-y-auto sm:max-w-md">
+      <SheetContent className="w-full overflow-y-auto sm:max-w-xl">
         <SheetHeader>
           <SheetTitle>{socioDisplayName(form as Socio)}</SheetTitle>
           <SheetDescription>Ficha del socio</SheetDescription>
@@ -168,6 +169,14 @@ export function SocioDrawer({
             </Button>
           </SheetFooter>
         )}
+
+        <div className="mt-6">
+          <AttachmentsPanel
+            socio={socio}
+            cooperativeId={cooperativeId}
+            canEdit={canEdit}
+          />
+        </div>
       </SheetContent>
     </Sheet>
   );
