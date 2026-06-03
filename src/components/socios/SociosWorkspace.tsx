@@ -7,7 +7,7 @@ import {
   Search,
   Plus,
   Users,
-  UserCheck,
+  ClipboardCheck,
   UserMinus,
 } from "lucide-react";
 
@@ -34,11 +34,16 @@ function matchesQuery(s: Socio, q: string) {
   const haystack = [
     socioDisplayName(s),
     s.codigo_socio,
+    s.nif_cif,
     s.nif,
-    s.email,
+    s.telefono_1,
+    s.telefono_2,
     s.telefono,
+    s.poblacion,
     s.municipio,
-    s.provincia,
+    s.cooperativa_codigo,
+    s.observaciones,
+    s.observaciones_2025,
   ]
     .filter(Boolean)
     .join(" ")
@@ -69,8 +74,9 @@ export function SociosWorkspace({
   const createMutation = useCreateSocio(cooperativeId);
 
   const metrics = useMemo(() => {
-    const activos = rows.filter((r) => r.activo).length;
-    return { total: rows.length, activos, bajas: rows.length - activos };
+    const bajas = rows.filter((r) => r.baja || !r.activo).length;
+    const conSubvencion = rows.filter((r) => r.subvencion).length;
+    return { total: rows.length, conSubvencion, bajas };
   }, [rows]);
 
   const filtered = useMemo(
@@ -98,18 +104,22 @@ export function SociosWorkspace({
 
   const metricCards = [
     { label: "Total", value: metrics.total, icon: Users, tone: "text-primary" },
-    { label: "Activos", value: metrics.activos, icon: UserCheck, tone: "text-success" },
+    {
+      label: "Subvencion",
+      value: metrics.conSubvencion,
+      icon: ClipboardCheck,
+      tone: "text-success",
+    },
     { label: "Bajas", value: metrics.bajas, icon: UserMinus, tone: "text-muted-foreground" },
   ];
 
   return (
     <div className="flex h-full flex-col">
-      {/* Header: title + metrics + view switcher */}
       <div className="flex flex-wrap items-center gap-4 border-b bg-card px-4 py-3">
         <div className="mr-auto">
           <h1 className="text-lg font-semibold tracking-tight">Socios</h1>
           <p className="text-xs text-muted-foreground">
-            Gestiona el censo de la cooperativa
+            Gestion administrativa de socios, ayudas y expedientes
           </p>
         </div>
 
@@ -150,7 +160,6 @@ export function SociosWorkspace({
         </div>
       </div>
 
-      {/* Body */}
       {view === "table" ? (
         <div className="min-h-0 flex-1">
           <SociosGrid
@@ -178,7 +187,7 @@ export function SociosWorkspace({
               <Input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Buscar socios…"
+                placeholder="Buscar socios..."
                 className="h-9 w-64 pl-8"
               />
             </div>
@@ -201,7 +210,7 @@ export function SociosWorkspace({
           <div className="scrollbar-thin min-h-0 flex-1 overflow-auto p-4">
             {filtered.length === 0 ? (
               <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
-                No hay socios que coincidan con la búsqueda.
+                No hay socios que coincidan con la busqueda.
               </div>
             ) : view === "cards" ? (
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -237,16 +246,16 @@ function BoardView({
 }) {
   const columns = [
     {
-      id: "activos",
-      label: "Activos",
+      id: "en_curso",
+      label: "En curso",
       accent: "bg-success",
-      items: rows.filter((r) => r.activo),
+      items: rows.filter((r) => !r.baja),
     },
     {
       id: "bajas",
       label: "Bajas",
       accent: "bg-muted-foreground",
-      items: rows.filter((r) => !r.activo),
+      items: rows.filter((r) => r.baja),
     },
   ];
 
