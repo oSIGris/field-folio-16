@@ -48,6 +48,9 @@ export function useSociosViewPrefs(userId: string) {
   const [prefs, setPrefs] = useState<SociosViewPrefs>(DEFAULT_PREFS);
   const [loaded, setLoaded] = useState(false);
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const setterCache = useRef<Map<string, Dispatch<SetStateAction<unknown>>>>(
+    new Map(),
+  );
 
   // Load once per user
   useEffect(() => {
@@ -91,8 +94,10 @@ export function useSociosViewPrefs(userId: string) {
   const makeSetter = useCallback(
     <K extends keyof SociosViewPrefs>(
       key: K,
-    ): Dispatch<SetStateAction<SociosViewPrefs[K]>> =>
-      (updater) =>
+    ): Dispatch<SetStateAction<SociosViewPrefs[K]>> => {
+      const cached = setterCache.current.get(key as string);
+      if (cached) return cached as Dispatch<SetStateAction<SociosViewPrefs[K]>>;
+      const setter: Dispatch<SetStateAction<SociosViewPrefs[K]>> = (updater) =>
         setPrefs((prev) => ({
           ...prev,
           [key]:
@@ -101,7 +106,13 @@ export function useSociosViewPrefs(userId: string) {
                   prev[key],
                 )
               : updater,
-        })),
+        }));
+      setterCache.current.set(
+        key as string,
+        setter as Dispatch<SetStateAction<unknown>>,
+      );
+      return setter;
+    },
     [],
   );
 
