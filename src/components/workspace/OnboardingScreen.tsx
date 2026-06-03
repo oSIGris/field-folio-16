@@ -19,28 +19,15 @@ export function OnboardingScreen({ onCreated }: { onCreated: () => void }) {
     if (!user) return;
     setSaving(true);
 
-    const { data: coop, error: coopError } = await supabase
-      .from("cooperatives")
-      .insert({ nombre: nombre.trim(), cif: cif.trim() || null, created_by: user.id })
-      .select("id")
-      .single();
-
-    if (coopError || !coop) {
-      setSaving(false);
-      toast.error("No se pudo crear la cooperativa", { description: coopError?.message });
-      return;
-    }
-
-    const { error: memberError } = await supabase.from("organization_members").insert({
-      user_id: user.id,
-      cooperative_id: coop.id,
-      role: "admin",
+    const { error } = await supabase.rpc("create_cooperative", {
+      _nombre: nombre.trim(),
+      _cif: cif.trim() || undefined,
     });
 
     setSaving(false);
 
-    if (memberError) {
-      toast.error("No se pudo asignar tu acceso", { description: memberError.message });
+    if (error) {
+      toast.error("No se pudo crear la cooperativa", { description: error.message });
       return;
     }
 
