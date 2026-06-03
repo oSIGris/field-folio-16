@@ -61,6 +61,21 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
+@theme inline {
+  --color-grid-header: var(--grid-header);
+  --color-grid-row-alt: var(--grid-row-alt);
+  --color-grid-row-hover: var(--grid-row-hover);
+  --color-grid-row-selected: var(--grid-row-selected);
+  --color-grid-line: var(--grid-line);
+  --color-cell-pending: var(--cell-pending);
+  --color-cell-pending-foreground: var(--cell-pending-foreground);
+  --color-cell-error: var(--cell-error);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+}
+
 :root {
   --radius: 0.375rem;
 
