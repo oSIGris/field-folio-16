@@ -218,6 +218,14 @@ export function SociosWorkspace({
         onOpenChange={setDrawerOpen}
         onSaved={() => {}}
       />
+
+      <NuevoSocioDialog
+        open={createOpen}
+        cooperativeId={cooperativeId}
+        userId={userId}
+        onOpenChange={setCreateOpen}
+        onCreated={openDrawer}
+      />
     </div>
   );
 }
