@@ -14,16 +14,217 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      cooperatives: {
+        Row: {
+          activo: boolean
+          cif: string | null
+          codigo_postal: string | null
+          created_at: string
+          created_by: string | null
+          direccion: string | null
+          email: string | null
+          id: string
+          municipio: string | null
+          nombre: string
+          provincia: string | null
+          telefono: string | null
+          updated_at: string
+        }
+        Insert: {
+          activo?: boolean
+          cif?: string | null
+          codigo_postal?: string | null
+          created_at?: string
+          created_by?: string | null
+          direccion?: string | null
+          email?: string | null
+          id?: string
+          municipio?: string | null
+          nombre: string
+          provincia?: string | null
+          telefono?: string | null
+          updated_at?: string
+        }
+        Update: {
+          activo?: boolean
+          cif?: string | null
+          codigo_postal?: string | null
+          created_at?: string
+          created_by?: string | null
+          direccion?: string | null
+          email?: string | null
+          id?: string
+          municipio?: string | null
+          nombre?: string
+          provincia?: string | null
+          telefono?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      organization_members: {
+        Row: {
+          cooperative_id: string
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["org_role"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cooperative_id: string
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["org_role"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cooperative_id?: string
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["org_role"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "organization_members_cooperative_id_fkey"
+            columns: ["cooperative_id"]
+            isOneToOne: false
+            referencedRelation: "cooperatives"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          nombre: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id: string
+          nombre?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          nombre?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      socios: {
+        Row: {
+          activo: boolean
+          apellidos: string | null
+          codigo_postal: string | null
+          codigo_socio: string | null
+          cooperative_id: string
+          created_at: string
+          created_by: string | null
+          direccion: string | null
+          email: string | null
+          fecha_alta: string | null
+          fecha_baja: string | null
+          iban: string | null
+          id: string
+          municipio: string | null
+          nif: string | null
+          nombre: string | null
+          notas: string | null
+          provincia: string | null
+          razon_social: string | null
+          telefono: string | null
+          tipo: Database["public"]["Enums"]["socio_tipo"]
+          updated_at: string
+        }
+        Insert: {
+          activo?: boolean
+          apellidos?: string | null
+          codigo_postal?: string | null
+          codigo_socio?: string | null
+          cooperative_id: string
+          created_at?: string
+          created_by?: string | null
+          direccion?: string | null
+          email?: string | null
+          fecha_alta?: string | null
+          fecha_baja?: string | null
+          iban?: string | null
+          id?: string
+          municipio?: string | null
+          nif?: string | null
+          nombre?: string | null
+          notas?: string | null
+          provincia?: string | null
+          razon_social?: string | null
+          telefono?: string | null
+          tipo?: Database["public"]["Enums"]["socio_tipo"]
+          updated_at?: string
+        }
+        Update: {
+          activo?: boolean
+          apellidos?: string | null
+          codigo_postal?: string | null
+          codigo_socio?: string | null
+          cooperative_id?: string
+          created_at?: string
+          created_by?: string | null
+          direccion?: string | null
+          email?: string | null
+          fecha_alta?: string | null
+          fecha_baja?: string | null
+          iban?: string | null
+          id?: string
+          municipio?: string | null
+          nif?: string | null
+          nombre?: string | null
+          notas?: string | null
+          provincia?: string | null
+          razon_social?: string | null
+          telefono?: string | null
+          tipo?: Database["public"]["Enums"]["socio_tipo"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "socios_cooperative_id_fkey"
+            columns: ["cooperative_id"]
+            isOneToOne: false
+            referencedRelation: "cooperatives"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_org_role: {
+        Args: {
+          _cooperative_id: string
+          _roles: Database["public"]["Enums"]["org_role"][]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      is_org_member: {
+        Args: { _cooperative_id: string; _user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      org_role: "admin" | "gestor" | "consulta"
+      socio_tipo: "persona_fisica" | "persona_juridica"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +351,9 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      org_role: ["admin", "gestor", "consulta"],
+      socio_tipo: ["persona_fisica", "persona_juridica"],
+    },
   },
 } as const
