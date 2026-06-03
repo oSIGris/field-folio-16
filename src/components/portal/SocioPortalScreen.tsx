@@ -3,6 +3,7 @@ import { LogOut, Sprout, FileText, Phone, MapPin, CalendarDays } from "lucide-re
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
 import { socioDisplayName, type Socio } from "@/lib/socios/socios-fields";
 
 function Field({ label, value }: { label: string; value: unknown }) {
@@ -55,7 +56,7 @@ export function SocioPortalScreen({
         </div>
       </header>
 
-      <main className="mx-auto max-w-5xl px-4 py-6">
+      <main className="mx-auto max-w-5xl space-y-4 px-4 py-6">
         <section className="rounded-lg border bg-card p-5 shadow-sm">
           <div className="flex flex-wrap items-start gap-4">
             <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-accent text-accent-foreground">
@@ -116,8 +117,14 @@ export function SocioPortalScreen({
           </div>
         </section>
 
+        <AttachmentsPanel
+          socio={socio}
+          cooperativeId={socio.cooperative_id}
+          canEdit={false}
+        />
+
         {socios.length > 1 && (
-          <p className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
+          <p className="flex items-center gap-2 text-xs text-muted-foreground">
             <MapPin className="h-3.5 w-3.5" />
             Tu usuario tiene varios expedientes enlazados. En esta primera version se muestra el primero.
           </p>
