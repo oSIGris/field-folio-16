@@ -296,7 +296,7 @@ export function SociosGrid({
           <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
           <Input
             value={globalFilter}
-            onChange={(e) => setGlobalFilter(e.target.value)}
+            onChange={(e) => onGlobalFilterChange(e.target.value)}
             placeholder="Buscar…"
             className="h-8 w-56 pl-8"
           />
@@ -306,7 +306,7 @@ export function SociosGrid({
           variant={showFilters ? "secondary" : "outline"}
           size="sm"
           className="h-8"
-          onClick={() => setShowFilters((s) => !s)}
+          onClick={() => onShowFiltersChange((s: boolean) => !s)}
         >
           Filtros
         </Button>
