@@ -48,6 +48,7 @@ import {
 } from "@/lib/socios/use-socios";
 import { EditableCell } from "./EditableCell";
 import { SocioDrawer } from "./SocioDrawer";
+import { NuevoSocioDialog } from "./NuevoSocioDialog";
 import type { GridMeta } from "./grid-types";
 
 const ROW_HEIGHT = 30;
@@ -90,6 +91,7 @@ export function SociosGrid({
   const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
   const [drawerSocio, setDrawerSocio] = useState<Socio | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [createOpen, setCreateOpen] = useState(false);
 
   const rowsById = useMemo(() => {
     const map = new Map<string, Socio>();
@@ -98,7 +100,6 @@ export function SociosGrid({
   }, [rows]);
 
   const saveMutation = useSaveSocios(cooperativeId);
-  const createMutation = useCreateSocio(cooperativeId);
   const deleteMutation = useDeleteSocios(cooperativeId);
 
   const getCellValue = useCallback(
@@ -258,19 +259,6 @@ export function SociosGrid({
       },
       onError: (e) =>
         toast.error("No se pudieron guardar los cambios", {
-          description: (e as Error).message,
-        }),
-    });
-  };
-
-  const handleCreate = () => {
-    createMutation.mutate(userId, {
-      onSuccess: (socio) => {
-        toast.success("Socio creado");
-        openDrawer(socio);
-      },
-      onError: (e) =>
-        toast.error("No se pudo crear el socio", {
           description: (e as Error).message,
         }),
     });
