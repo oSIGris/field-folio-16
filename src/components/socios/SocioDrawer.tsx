@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -59,12 +60,22 @@ export function SocioDrawer({
 
   const handleSave = async () => {
     setSaving(true);
-    const { id, created_at, updated_at, cooperative_id, created_by, ...patch } = form as Socio;
+    const {
+      id,
+      created_at,
+      updated_at,
+      cooperative_id,
+      created_by,
+      updated_by,
+      deleted_at,
+      ...patch
+    } = form as Socio;
     const { error } = await supabase
       .from("socios")
       .update(patch)
       .eq("id", socio.id)
-      .eq("cooperative_id", cooperativeId);
+      .eq("cooperative_id", cooperativeId)
+      .is("deleted_at", null);
     setSaving(false);
     if (error) {
       toast.error("No se pudo guardar", { description: error.message });
@@ -108,7 +119,7 @@ export function SocioDrawer({
                     onValueChange={(v) => set(field.key, v)}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="—" />
+                      <SelectValue placeholder="-" />
                     </SelectTrigger>
                     <SelectContent>
                       {(field.options ?? TIPO_OPTIONS).map((o) => (
@@ -118,6 +129,20 @@ export function SocioDrawer({
                       ))}
                     </SelectContent>
                   </Select>
+                </div>
+              );
+            }
+            if (field.type === "long_text") {
+              return (
+                <div key={field.key} className="space-y-1">
+                  <Label htmlFor={`f-${field.key}`}>{field.label}</Label>
+                  <Textarea
+                    id={`f-${field.key}`}
+                    value={(value as string) ?? ""}
+                    disabled={!canEdit}
+                    className="min-h-24 resize-y"
+                    onChange={(e) => set(field.key, e.target.value || null)}
+                  />
                 </div>
               );
             }
@@ -139,7 +164,7 @@ export function SocioDrawer({
         {canEdit && (
           <SheetFooter className="mt-6">
             <Button onClick={handleSave} disabled={saving} className="w-full">
-              {saving ? "Guardando…" : "Guardar cambios"}
+              {saving ? "Guardando..." : "Guardar cambios"}
             </Button>
           </SheetFooter>
         )}
