@@ -20,6 +20,7 @@ import { useSociosViewPrefs } from "@/lib/socios/use-view-prefs";
 import {
   useCustomFields,
   useSocioCustomValues,
+  type SocioValueMap,
 } from "@/lib/custom-fields/use-custom-fields";
 import { SociosGrid } from "./SociosGrid";
 import { SocioCard } from "./SocioCard";
@@ -83,7 +84,7 @@ export function SociosWorkspace({
 
   const { data: customFields = [] } = useCustomFields(cooperativeId, "socio");
   const { data: valueMap } = useSocioCustomValues(cooperativeId);
-  const emptyValueMap = useMemo(() => new Map(), []);
+  const emptyValueMap = useMemo<SocioValueMap>(() => new Map(), []);
 
   const metrics = useMemo(() => {
     const bajas = rows.filter((r) => r.baja || !r.activo).length;
