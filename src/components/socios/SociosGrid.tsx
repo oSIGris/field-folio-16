@@ -57,22 +57,37 @@ export function SociosGrid({
   cooperativeId,
   canEdit,
   userId,
+  sorting,
+  onSortingChange,
+  columnFilters,
+  onColumnFiltersChange,
+  globalFilter,
+  onGlobalFilterChange,
+  columnVisibility,
+  onColumnVisibilityChange,
+  showFilters,
+  onShowFiltersChange,
 }: {
   rows: Socio[];
   cooperativeId: string;
   canEdit: boolean;
   userId: string;
+  sorting: SortingState;
+  onSortingChange: (u: React.SetStateAction<SortingState>) => void;
+  columnFilters: ColumnFiltersState;
+  onColumnFiltersChange: (u: React.SetStateAction<ColumnFiltersState>) => void;
+  globalFilter: string;
+  onGlobalFilterChange: (u: React.SetStateAction<string>) => void;
+  columnVisibility: VisibilityState;
+  onColumnVisibilityChange: (u: React.SetStateAction<VisibilityState>) => void;
+  showFilters: boolean;
+  onShowFiltersChange: (u: React.SetStateAction<boolean>) => void;
 }) {
   const [edits, setEdits] = useState<Record<string, Partial<Socio>>>({});
   const editsRef = useRef(edits);
   editsRef.current = edits;
 
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [globalFilter, setGlobalFilter] = useState("");
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
-  const [showFilters, setShowFilters] = useState(false);
   const [drawerSocio, setDrawerSocio] = useState<Socio | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -203,10 +218,10 @@ export function SociosGrid({
     getRowId: (row) => row.id,
     enableColumnResizing: true,
     columnResizeMode: "onChange",
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
-    onGlobalFilterChange: setGlobalFilter,
-    onColumnVisibilityChange: setColumnVisibility,
+    onSortingChange,
+    onColumnFiltersChange,
+    onGlobalFilterChange,
+    onColumnVisibilityChange,
     onRowSelectionChange: setRowSelection,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -281,7 +296,7 @@ export function SociosGrid({
           <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
           <Input
             value={globalFilter}
-            onChange={(e) => setGlobalFilter(e.target.value)}
+            onChange={(e) => onGlobalFilterChange(e.target.value)}
             placeholder="Buscar…"
             className="h-8 w-56 pl-8"
           />
@@ -291,7 +306,7 @@ export function SociosGrid({
           variant={showFilters ? "secondary" : "outline"}
           size="sm"
           className="h-8"
-          onClick={() => setShowFilters((s) => !s)}
+          onClick={() => onShowFiltersChange((s: boolean) => !s)}
         >
           Filtros
         </Button>
