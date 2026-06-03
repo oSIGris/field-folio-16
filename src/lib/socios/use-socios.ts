@@ -1,10 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { supabase } from "@/integrations/supabase/client";
-import type { Database } from "@/integrations/supabase/types";
 import type { Socio } from "./socios-fields";
 
-type SocioUpdate = Database["public"]["Tables"]["socios"]["Update"];
+type SocioUpdate = Partial<Socio>;
 
 export function sociosQueryKey(cooperativeId: string) {
   return ["socios", cooperativeId] as const;
@@ -19,16 +18,18 @@ export function useSocios(cooperativeId: string) {
         .from("socios")
         .select("*")
         .eq("cooperative_id", cooperativeId)
-        .order("codigo_socio", { ascending: true, nullsFirst: false })
+        .is("deleted_at", null)
+        .order("nif_cif", { ascending: true, nullsFirst: false })
+        .order("nombre", { ascending: true, nullsFirst: false })
         .order("created_at", { ascending: true })
         .limit(5000);
       if (error) throw error;
-      return data ?? [];
+      return (data ?? []) as Socio[];
     },
   });
 }
 
-export function useSaveSocios(cooperativeId: string) {
+export function useSaveSocios(cooperativeId: string, userId: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (edits: Record<string, SocioUpdate>) => {
@@ -36,9 +37,10 @@ export function useSaveSocios(cooperativeId: string) {
       for (const [id, patch] of entries) {
         const { error } = await supabase
           .from("socios")
-          .update(patch)
+          .update({ ...patch, updated_by: userId })
           .eq("id", id)
-          .eq("cooperative_id", cooperativeId);
+          .eq("cooperative_id", cooperativeId)
+          .is("deleted_at", null);
         if (error) throw error;
       }
       return entries.length;
@@ -55,11 +57,24 @@ export function useCreateSocio(cooperativeId: string) {
     mutationFn: async (userId: string): Promise<Socio> => {
       const { data, error } = await supabase
         .from("socios")
-        .insert({ cooperative_id: cooperativeId, created_by: userId, activo: true })
+        .insert({
+          cooperative_id: cooperativeId,
+          created_by: userId,
+          updated_by: userId,
+          activo: true,
+          alta: true,
+          baja: false,
+          subvencion: false,
+          traspaso: false,
+          finaliza: false,
+          registra: false,
+          cuaderno: false,
+          ayudas_borras: false,
+        })
         .select("*")
         .single();
       if (error) throw error;
-      return data;
+      return data as Socio;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: sociosQueryKey(cooperativeId) });
@@ -67,15 +82,16 @@ export function useCreateSocio(cooperativeId: string) {
   });
 }
 
-export function useDeleteSocios(cooperativeId: string) {
+export function useDeleteSocios(cooperativeId: string, userId: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (ids: string[]) => {
       const { error } = await supabase
         .from("socios")
-        .delete()
+        .update({ deleted_at: new Date().toISOString(), updated_by: userId })
         .in("id", ids)
-        .eq("cooperative_id", cooperativeId);
+        .eq("cooperative_id", cooperativeId)
+        .is("deleted_at", null);
       if (error) throw error;
       return ids.length;
     },
