@@ -47,7 +47,7 @@ export function SocioCard({
           <p className="flex items-center gap-1 truncate text-xs text-muted-foreground">
             <Hash className="h-3 w-3" />
             {socio.nif_cif || socio.codigo_socio || "Sin NIF/CIF"}
-            {tipoLabel ? ` · ${tipoLabel}` : ""}
+            {tipoLabel ? ` - ${tipoLabel}` : ""}
           </p>
         </div>
         <span
