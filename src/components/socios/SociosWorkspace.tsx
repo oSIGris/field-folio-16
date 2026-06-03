@@ -15,11 +15,11 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { socioDisplayName, type Socio } from "@/lib/socios/socios-fields";
-import { useCreateSocio } from "@/lib/socios/use-socios";
 import { useSociosViewPrefs } from "@/lib/socios/use-view-prefs";
 import { SociosGrid } from "./SociosGrid";
 import { SocioCard } from "./SocioCard";
 import { SocioDrawer } from "./SocioDrawer";
+import { NuevoSocioDialog } from "./NuevoSocioDialog";
 
 type View = "table" | "cards" | "board";
 
@@ -70,8 +70,7 @@ export function SociosWorkspace({
 
   const [drawerSocio, setDrawerSocio] = useState<Socio | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
-
-  const createMutation = useCreateSocio(cooperativeId);
+  const [createOpen, setCreateOpen] = useState(false);
 
   const metrics = useMemo(() => {
     const bajas = rows.filter((r) => r.baja || !r.activo).length;
@@ -87,19 +86,6 @@ export function SociosWorkspace({
   const openDrawer = (s: Socio) => {
     setDrawerSocio(s);
     setDrawerOpen(true);
-  };
-
-  const handleCreate = () => {
-    createMutation.mutate(userId, {
-      onSuccess: (socio) => {
-        toast.success("Socio creado");
-        openDrawer(socio);
-      },
-      onError: (e) =>
-        toast.error("No se pudo crear el socio", {
-          description: (e as Error).message,
-        }),
-    });
   };
 
   const metricCards = [
