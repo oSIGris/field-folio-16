@@ -11,8 +11,10 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth/auth-context";
 import type { Database } from "@/integrations/supabase/types";
+import type { Socio } from "@/lib/socios/socios-fields";
 import { OnboardingScreen } from "@/components/workspace/OnboardingScreen";
 import { FullScreenMessage } from "@/components/layout/FullScreenMessage";
+import { SocioPortalScreen } from "@/components/portal/SocioPortalScreen";
 
 type OrgRole = Database["public"]["Enums"]["org_role"];
 
@@ -37,7 +39,7 @@ const WorkspaceContext = createContext<WorkspaceContextValue | undefined>(undefi
 const STORAGE_KEY = "erp.cooperativeId";
 
 export function WorkspaceProvider({ children }: { children: ReactNode }) {
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
 
   const membershipsQuery = useQuery({
     queryKey: ["memberships", user?.id],
@@ -62,6 +64,21 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   const cooperatives = useMemo(() => membershipsQuery.data ?? [], [membershipsQuery.data]);
   const [selectedId, setSelectedId] = useState<string>("");
 
+  const portalSociosQuery = useQuery({
+    queryKey: ["portal-socios", user?.id],
+    enabled: !!user && membershipsQuery.isSuccess && cooperatives.length === 0,
+    queryFn: async (): Promise<Socio[]> => {
+      const { data, error } = await supabase
+        .from("socios")
+        .select("*")
+        .is("deleted_at", null)
+        .order("nombre", { ascending: true, nullsFirst: false })
+        .limit(20);
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
   // Keep the selected cooperative valid and persisted.
   useEffect(() => {
     if (cooperatives.length === 0) return;
@@ -80,7 +97,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   };
 
   if (!user || membershipsQuery.isLoading) {
-    return <FullScreenMessage>Cargando espacio de trabajo…</FullScreenMessage>;
+    return <FullScreenMessage>Cargando espacio de trabajo...</FullScreenMessage>;
   }
 
   if (membershipsQuery.isError) {
@@ -92,6 +109,23 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   }
 
   if (cooperatives.length === 0) {
+    if (portalSociosQuery.isLoading) {
+      return <FullScreenMessage>Cargando expediente...</FullScreenMessage>;
+    }
+
+    if (portalSociosQuery.isError) {
+      return (
+        <FullScreenMessage variant="error">
+          No se pudo cargar tu expediente.
+        </FullScreenMessage>
+      );
+    }
+
+    const portalSocios = portalSociosQuery.data ?? [];
+    if (portalSocios.length > 0) {
+      return <SocioPortalScreen socios={portalSocios} onSignOut={signOut} />;
+    }
+
     return <OnboardingScreen onCreated={() => membershipsQuery.refetch()} />;
   }
 
