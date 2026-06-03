@@ -1,4 +1,4 @@
-import { Mail, Phone, MapPin, Hash, Building2, User } from "lucide-react";
+import { Phone, MapPin, Hash, Building2, User } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { socioDisplayName, TIPO_OPTIONS, type Socio } from "@/lib/socios/socios-fields";
@@ -23,19 +23,16 @@ export function SocioCard({
   const tipoLabel = TIPO_OPTIONS.find((t) => t.value === socio.tipo)?.label;
 
   const lines = [
-    socio.email && { icon: Mail, value: socio.email },
-    socio.telefono && { icon: Phone, value: socio.telefono },
-    (socio.municipio || socio.provincia) && {
-      icon: MapPin,
-      value: [socio.municipio, socio.provincia].filter(Boolean).join(", "),
-    },
-  ].filter(Boolean) as { icon: typeof Mail; value: string }[];
+    socio.telefono_1 && { icon: Phone, value: socio.telefono_1 },
+    socio.telefono_2 && { icon: Phone, value: socio.telefono_2 },
+    socio.poblacion && { icon: MapPin, value: socio.poblacion },
+  ].filter(Boolean) as { icon: typeof Phone; value: string }[];
 
   return (
     <button
       type="button"
       onClick={() => onOpen(socio)}
-      className="group flex w-full flex-col gap-3 rounded-xl border bg-card p-4 text-left shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md"
+      className="group flex w-full flex-col gap-3 rounded-lg border bg-card p-4 text-left shadow-sm transition-all hover:border-primary/40 hover:shadow-md"
     >
       <div className="flex items-start gap-3">
         <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent text-sm font-semibold text-accent-foreground">
@@ -49,19 +46,21 @@ export function SocioCard({
           <p className="truncate text-sm font-semibold text-foreground">{name}</p>
           <p className="flex items-center gap-1 truncate text-xs text-muted-foreground">
             <Hash className="h-3 w-3" />
-            {socio.codigo_socio || "Sin código"}
+            {socio.nif_cif || socio.codigo_socio || "Sin NIF/CIF"}
             {tipoLabel ? ` · ${tipoLabel}` : ""}
           </p>
         </div>
         <span
           className={cn(
             "shrink-0 rounded-full px-2 py-0.5 text-[11px] font-medium",
-            socio.activo
-              ? "bg-success/15 text-success"
-              : "bg-muted text-muted-foreground",
+            socio.baja
+              ? "bg-muted text-muted-foreground"
+              : socio.subvencion
+                ? "bg-success/15 text-success"
+                : "bg-primary/10 text-primary",
           )}
         >
-          {socio.activo ? "Activo" : "Baja"}
+          {socio.baja ? "Baja" : socio.subvencion ? "Subvencion" : "Activo"}
         </span>
       </div>
 
