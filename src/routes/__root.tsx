@@ -7,14 +7,20 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { Suspense, lazy, type ReactNode } from "react";
+import { useEffect } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AuthProvider } from "../lib/auth/auth-context";
-import { Toaster } from "../components/ui/sonner";
 import { supabase } from "../integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
+
+// Deferred: the toaster is not needed for first paint, so keep it off the
+// critical bundle and load it lazily after hydration.
+const Toaster = lazy(() =>
+  import("../components/ui/sonner").then((m) => ({ default: m.Toaster })),
+);
 
 function NotFoundComponent() {
   return (
@@ -126,7 +132,9 @@ function RootComponent() {
         <AuthCacheSync />
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
         <Outlet />
-        <Toaster richColors position="top-right" />
+        <Suspense fallback={null}>
+          <Toaster richColors position="top-right" />
+        </Suspense>
       </AuthProvider>
     </QueryClientProvider>
   );
