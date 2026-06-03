@@ -13,6 +13,7 @@ import type {
 } from "@tanstack/react-table";
 
 import { supabase } from "@/integrations/supabase/client";
+import type { Json } from "@/integrations/supabase/types";
 
 export type SociosView = "table" | "cards" | "board";
 
@@ -77,7 +78,7 @@ export function useSociosViewPrefs(userId: string) {
         {
           user_id: userId,
           preference_key: PREFERENCE_KEY,
-          value: prefs as unknown as Record<string, unknown>,
+          value: prefs as unknown as Json,
         },
         { onConflict: "user_id,preference_key" },
       );
