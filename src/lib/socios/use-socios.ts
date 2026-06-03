@@ -24,20 +24,21 @@ export function useSocios(cooperativeId: string) {
         .order("created_at", { ascending: true })
         .limit(5000);
       if (error) throw error;
-      return (data ?? []) as Socio[];
+      return data ?? [];
     },
   });
 }
 
-export function useSaveSocios(cooperativeId: string, userId: string) {
+export function useSaveSocios(cooperativeId: string, userId?: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (edits: Record<string, SocioUpdate>) => {
       const entries = Object.entries(edits);
       for (const [id, patch] of entries) {
+        const payload: SocioUpdate = userId ? { ...patch, updated_by: userId } : patch;
         const { error } = await supabase
           .from("socios")
-          .update({ ...patch, updated_by: userId })
+          .update(payload)
           .eq("id", id)
           .eq("cooperative_id", cooperativeId)
           .is("deleted_at", null);
@@ -74,7 +75,7 @@ export function useCreateSocio(cooperativeId: string) {
         .select("*")
         .single();
       if (error) throw error;
-      return data as Socio;
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: sociosQueryKey(cooperativeId) });
@@ -82,13 +83,17 @@ export function useCreateSocio(cooperativeId: string) {
   });
 }
 
-export function useDeleteSocios(cooperativeId: string, userId: string) {
+export function useDeleteSocios(cooperativeId: string, userId?: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (ids: string[]) => {
+      const payload: SocioUpdate = {
+        deleted_at: new Date().toISOString(),
+        ...(userId ? { updated_by: userId } : {}),
+      };
       const { error } = await supabase
         .from("socios")
-        .update({ deleted_at: new Date().toISOString(), updated_by: userId })
+        .update(payload)
         .in("id", ids)
         .eq("cooperative_id", cooperativeId)
         .is("deleted_at", null);
