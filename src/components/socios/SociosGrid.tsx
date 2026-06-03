@@ -436,6 +436,9 @@ export function SociosGrid({
               .filter((c) => c.id !== "select" && c.id !== "actions")
               .map((column) => {
                 const field = SOCIO_FIELDS.find((f) => f.key === column.id);
+                const cf = column.id.startsWith("cf:")
+                  ? fieldsById.get(column.id.slice(3))
+                  : undefined;
                 return (
                   <DropdownMenuCheckboxItem
                     key={column.id}
@@ -443,7 +446,7 @@ export function SociosGrid({
                     onCheckedChange={(v) => column.toggleVisibility(!!v)}
                     onSelect={(e) => e.preventDefault()}
                   >
-                    {field?.label ?? column.id}
+                    {field?.label ?? cf?.name ?? column.id}
                   </DropdownMenuCheckboxItem>
                 );
               })}
