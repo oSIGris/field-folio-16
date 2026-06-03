@@ -14,6 +14,159 @@ export type Database = {
   }
   public: {
     Tables: {
+      aid_applications: {
+        Row: {
+          aid_type_id: string | null
+          archived_at: string | null
+          archived_by: string | null
+          assigned_to: string | null
+          campaign_id: string | null
+          cooperative_id: string
+          created_at: string
+          created_by: string | null
+          due_date: string | null
+          id: string
+          notes: string | null
+          resolved_at: string | null
+          socio_id: string
+          status: Database["public"]["Enums"]["aid_application_status"]
+          submitted_at: string | null
+          title: string | null
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          aid_type_id?: string | null
+          archived_at?: string | null
+          archived_by?: string | null
+          assigned_to?: string | null
+          campaign_id?: string | null
+          cooperative_id: string
+          created_at?: string
+          created_by?: string | null
+          due_date?: string | null
+          id?: string
+          notes?: string | null
+          resolved_at?: string | null
+          socio_id: string
+          status?: Database["public"]["Enums"]["aid_application_status"]
+          submitted_at?: string | null
+          title?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          aid_type_id?: string | null
+          archived_at?: string | null
+          archived_by?: string | null
+          assigned_to?: string | null
+          campaign_id?: string | null
+          cooperative_id?: string
+          created_at?: string
+          created_by?: string | null
+          due_date?: string | null
+          id?: string
+          notes?: string | null
+          resolved_at?: string | null
+          socio_id?: string
+          status?: Database["public"]["Enums"]["aid_application_status"]
+          submitted_at?: string | null
+          title?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      aid_campaigns: {
+        Row: {
+          active: boolean
+          archived_at: string | null
+          archived_by: string | null
+          cooperative_id: string
+          created_at: string
+          created_by: string | null
+          ends_on: string | null
+          id: string
+          name: string
+          starts_on: string | null
+          updated_at: string
+          year: number | null
+        }
+        Insert: {
+          active?: boolean
+          archived_at?: string | null
+          archived_by?: string | null
+          cooperative_id: string
+          created_at?: string
+          created_by?: string | null
+          ends_on?: string | null
+          id?: string
+          name: string
+          starts_on?: string | null
+          updated_at?: string
+          year?: number | null
+        }
+        Update: {
+          active?: boolean
+          archived_at?: string | null
+          archived_by?: string | null
+          cooperative_id?: string
+          created_at?: string
+          created_by?: string | null
+          ends_on?: string | null
+          id?: string
+          name?: string
+          starts_on?: string | null
+          updated_at?: string
+          year?: number | null
+        }
+        Relationships: []
+      }
+      aid_types: {
+        Row: {
+          active: boolean
+          archived_at: string | null
+          archived_by: string | null
+          code: string | null
+          cooperative_id: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          name: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          archived_at?: string | null
+          archived_by?: string | null
+          code?: string | null
+          cooperative_id: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          archived_at?: string | null
+          archived_by?: string | null
+          code?: string | null
+          cooperative_id?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       cooperatives: {
         Row: {
           activo: boolean
@@ -59,6 +212,111 @@ export type Database = {
           provincia?: string | null
           telefono?: string | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      custom_field_values: {
+        Row: {
+          aid_application_id: string | null
+          cooperative_id: string
+          created_at: string
+          custom_field_id: string
+          id: string
+          socio_id: string | null
+          updated_at: string
+          updated_by: string | null
+          value_boolean: boolean | null
+          value_date: string | null
+          value_json: Json | null
+          value_number: number | null
+          value_text: string | null
+        }
+        Insert: {
+          aid_application_id?: string | null
+          cooperative_id: string
+          created_at?: string
+          custom_field_id: string
+          id?: string
+          socio_id?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          value_boolean?: boolean | null
+          value_date?: string | null
+          value_json?: Json | null
+          value_number?: number | null
+          value_text?: string | null
+        }
+        Update: {
+          aid_application_id?: string | null
+          cooperative_id?: string
+          created_at?: string
+          custom_field_id?: string
+          id?: string
+          socio_id?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          value_boolean?: boolean | null
+          value_date?: string | null
+          value_json?: Json | null
+          value_number?: number | null
+          value_text?: string | null
+        }
+        Relationships: []
+      }
+      custom_fields: {
+        Row: {
+          archived_at: string | null
+          archived_by: string | null
+          cooperative_id: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          field_type: Database["public"]["Enums"]["custom_field_type"]
+          id: string
+          key: string
+          name: string
+          options: Json
+          required: boolean
+          scope: Database["public"]["Enums"]["custom_field_scope"]
+          sort_order: number
+          updated_at: string
+          visible: boolean
+        }
+        Insert: {
+          archived_at?: string | null
+          archived_by?: string | null
+          cooperative_id: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          field_type?: Database["public"]["Enums"]["custom_field_type"]
+          id?: string
+          key: string
+          name: string
+          options?: Json
+          required?: boolean
+          scope: Database["public"]["Enums"]["custom_field_scope"]
+          sort_order?: number
+          updated_at?: string
+          visible?: boolean
+        }
+        Update: {
+          archived_at?: string | null
+          archived_by?: string | null
+          cooperative_id?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          field_type?: Database["public"]["Enums"]["custom_field_type"]
+          id?: string
+          key?: string
+          name?: string
+          options?: Json
+          required?: boolean
+          scope?: Database["public"]["Enums"]["custom_field_scope"]
+          sort_order?: number
+          updated_at?: string
+          visible?: boolean
         }
         Relationships: []
       }
@@ -118,6 +376,42 @@ export type Database = {
           id?: string
           nombre?: string | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      saved_views: {
+        Row: {
+          config: Json
+          cooperative_id: string
+          created_at: string
+          id: string
+          name: string
+          shared_with_cooperative: boolean
+          table_key: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          config?: Json
+          cooperative_id: string
+          created_at?: string
+          id?: string
+          name: string
+          shared_with_cooperative?: boolean
+          table_key: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          config?: Json
+          cooperative_id?: string
+          created_at?: string
+          id?: string
+          name?: string
+          shared_with_cooperative?: boolean
+          table_key?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -363,6 +657,26 @@ export type Database = {
       }
     }
     Enums: {
+      aid_application_status:
+        | "pendiente"
+        | "en_revision"
+        | "falta_documentacion"
+        | "presentado"
+        | "subsanacion"
+        | "aprobado"
+        | "rechazado"
+        | "finalizado"
+      custom_field_scope: "socio" | "aid_application"
+      custom_field_type:
+        | "text"
+        | "number"
+        | "date"
+        | "boolean"
+        | "select"
+        | "multiselect"
+        | "currency"
+        | "percentage"
+        | "long_text"
       org_role: "admin" | "gestor" | "consulta"
       socio_tipo: "persona_fisica" | "persona_juridica"
       socio_user_status: "active" | "invited" | "disabled"
@@ -493,6 +807,28 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      aid_application_status: [
+        "pendiente",
+        "en_revision",
+        "falta_documentacion",
+        "presentado",
+        "subsanacion",
+        "aprobado",
+        "rechazado",
+        "finalizado",
+      ],
+      custom_field_scope: ["socio", "aid_application"],
+      custom_field_type: [
+        "text",
+        "number",
+        "date",
+        "boolean",
+        "select",
+        "multiselect",
+        "currency",
+        "percentage",
+        "long_text",
+      ],
       org_role: ["admin", "gestor", "consulta"],
       socio_tipo: ["persona_fisica", "persona_juridica"],
       socio_user_status: ["active", "invited", "disabled"],

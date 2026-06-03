@@ -22,10 +22,6 @@ export type Socio = BaseSocio & {
   poblacion: string | null;
   updated_by: string | null;
   deleted_at: string | null;
-  whatsapp_phone_e164: string | null;
-  whatsapp_opt_in: boolean;
-  whatsapp_opt_in_at: string | null;
-  whatsapp_last_interaction_at: string | null;
 };
 
 export type FieldType = "text" | "date" | "boolean" | "enum" | "long_text";
