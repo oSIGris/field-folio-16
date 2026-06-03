@@ -209,6 +209,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      create_cooperative: {
+        Args: { _cif?: string; _nombre: string }
+        Returns: string
+      }
       has_org_role: {
         Args: {
           _cooperative_id: string
