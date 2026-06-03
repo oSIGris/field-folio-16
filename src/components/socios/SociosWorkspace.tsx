@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { socioDisplayName, type Socio } from "@/lib/socios/socios-fields";
 import { useCreateSocio } from "@/lib/socios/use-socios";
+import { useSociosViewPrefs } from "@/lib/socios/use-view-prefs";
 import { SociosGrid } from "./SociosGrid";
 import { SocioCard } from "./SocioCard";
 import { SocioDrawer } from "./SocioDrawer";
@@ -56,8 +57,12 @@ export function SociosWorkspace({
   canEdit: boolean;
   userId: string;
 }) {
-  const [view, setView] = useState<View>("table");
-  const [query, setQuery] = useState("");
+  const { prefs, makeSetter } = useSociosViewPrefs(userId);
+  const view = prefs.view;
+  const setView = makeSetter("view");
+  const query = prefs.search;
+  const setQuery = makeSetter("search");
+
   const [drawerSocio, setDrawerSocio] = useState<Socio | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -153,6 +158,16 @@ export function SociosWorkspace({
             cooperativeId={cooperativeId}
             canEdit={canEdit}
             userId={userId}
+            sorting={prefs.sorting}
+            onSortingChange={makeSetter("sorting")}
+            columnFilters={prefs.columnFilters}
+            onColumnFiltersChange={makeSetter("columnFilters")}
+            globalFilter={prefs.globalFilter}
+            onGlobalFilterChange={makeSetter("globalFilter")}
+            columnVisibility={prefs.columnVisibility}
+            onColumnVisibilityChange={makeSetter("columnVisibility")}
+            showFilters={prefs.showFilters}
+            onShowFiltersChange={makeSetter("showFilters")}
           />
         </div>
       ) : (
