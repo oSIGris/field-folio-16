@@ -21,7 +21,7 @@ export function OnboardingScreen({ onCreated }: { onCreated: () => void }) {
 
     const { error } = await supabase.rpc("create_cooperative", {
       _nombre: nombre.trim(),
-      _cif: cif.trim() || null,
+      _cif: cif.trim() || undefined,
     });
 
     setSaving(false);
