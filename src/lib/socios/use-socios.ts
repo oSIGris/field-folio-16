@@ -13,6 +13,10 @@ export function useSocios(cooperativeId: string) {
   return useQuery({
     queryKey: sociosQueryKey(cooperativeId),
     enabled: !!cooperativeId,
+    staleTime: 60_000,
+    gcTime: 5 * 60_000,
+    refetchOnWindowFocus: false,
+    placeholderData: (prev) => prev,
     queryFn: async (): Promise<Socio[]> => {
       const { data, error } = await supabase
         .from("socios")
@@ -55,7 +59,11 @@ export function useSaveSocios(cooperativeId: string, userId?: string) {
 export function useCreateSocio(cooperativeId: string) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (userId: string): Promise<Socio> => {
+    mutationFn: async (
+      input: string | { userId: string; values?: Partial<Socio> },
+    ): Promise<Socio> => {
+      const userId = typeof input === "string" ? input : input.userId;
+      const values = typeof input === "string" ? undefined : input.values;
       const { data, error } = await supabase
         .from("socios")
         .insert({
@@ -71,6 +79,7 @@ export function useCreateSocio(cooperativeId: string) {
           registra: false,
           cuaderno: false,
           ayudas_borras: false,
+          ...values,
         })
         .select("*")
         .single();
