@@ -184,8 +184,7 @@ export function SociosWorkspace({
               <Button
                 size="sm"
                 className="ml-auto h-9 gap-1.5"
-                onClick={handleCreate}
-                disabled={createMutation.isPending}
+                onClick={() => setCreateOpen(true)}
               >
                 <Plus className="h-4 w-4" />
                 Nuevo socio
