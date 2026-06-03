@@ -45,18 +45,36 @@ import {
   useDeleteSocios,
   useSaveSocios,
 } from "@/lib/socios/use-socios";
+import {
+  buildValueColumns,
+  readFieldValue,
+  useSaveSocioCustomValues,
+  type CustomField,
+  type SocioValueEdit,
+  type SocioValueMap,
+} from "@/lib/custom-fields/use-custom-fields";
 import { EditableCell } from "./EditableCell";
+import { CustomFieldCell } from "./CustomFieldCell";
 import { SocioDrawer } from "./SocioDrawer";
 import { NuevoSocioDialog } from "./NuevoSocioDialog";
 import type { GridMeta } from "./grid-types";
 
 const ROW_HEIGHT = 30;
 
+function valuesEqual(a: unknown, b: unknown) {
+  if (Array.isArray(a) && Array.isArray(b)) {
+    return a.length === b.length && a.every((v, i) => v === b[i]);
+  }
+  return a === b;
+}
+
 export function SociosGrid({
   rows,
   cooperativeId,
   canEdit,
   userId,
+  customFields,
+  valueMap,
   sorting,
   onSortingChange,
   columnFilters,
@@ -72,6 +90,8 @@ export function SociosGrid({
   cooperativeId: string;
   canEdit: boolean;
   userId: string;
+  customFields: CustomField[];
+  valueMap: SocioValueMap;
   sorting: SortingState;
   onSortingChange: (u: React.SetStateAction<SortingState>) => void;
   columnFilters: ColumnFiltersState;
@@ -87,6 +107,11 @@ export function SociosGrid({
   const editsRef = useRef(edits);
   editsRef.current = edits;
 
+  // Custom field value edits keyed `${socioId}:${fieldId}`.
+  const [cfEdits, setCfEdits] = useState<Record<string, unknown>>({});
+  const cfEditsRef = useRef(cfEdits);
+  cfEditsRef.current = cfEdits;
+
   const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
   const [drawerSocio, setDrawerSocio] = useState<Socio | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -100,6 +125,13 @@ export function SociosGrid({
 
   const saveMutation = useSaveSocios(cooperativeId);
   const deleteMutation = useDeleteSocios(cooperativeId);
+  const saveValuesMutation = useSaveSocioCustomValues(cooperativeId, userId);
+
+  const fieldsById = useMemo(() => {
+    const map = new Map<string, CustomField>();
+    for (const f of customFields) map.set(f.id, f);
+    return map;
+  }, [customFields]);
 
   const getCellValue = useCallback(
     (id: string, key: keyof Socio) => {
@@ -133,6 +165,43 @@ export function SociosGrid({
     const e = editsRef.current[id];
     return !!e && key in e;
   }, []);
+
+  const baseCustomValue = useCallback(
+    (socioId: string, field: CustomField) =>
+      readFieldValue(field, valueMap.get(socioId)?.get(field.id)),
+    [valueMap],
+  );
+
+  const getCustomValue = useCallback(
+    (socioId: string, field: CustomField) => {
+      const k = `${socioId}:${field.id}`;
+      if (k in cfEditsRef.current) return cfEditsRef.current[k];
+      return baseCustomValue(socioId, field);
+    },
+    [baseCustomValue],
+  );
+
+  const setCustomValue = useCallback(
+    (socioId: string, field: CustomField, value: unknown) => {
+      const k = `${socioId}:${field.id}`;
+      setCfEdits((prev) => {
+        const original = baseCustomValue(socioId, field);
+        const next = { ...prev };
+        if (valuesEqual(value, original ?? (field.field_type === "multiselect" ? [] : null))) {
+          delete next[k];
+        } else {
+          next[k] = value;
+        }
+        return next;
+      });
+    },
+    [baseCustomValue],
+  );
+
+  const isCustomDirty = useCallback(
+    (socioId: string, fieldId: string) => `${socioId}:${fieldId}` in cfEditsRef.current,
+    [],
+  );
 
   const openDrawer = useCallback((socio: Socio) => {
     setDrawerSocio(socio);
@@ -208,8 +277,30 @@ export function SociosGrid({
       ),
     };
 
-    return [selectCol, ...fieldCols, actionsCol];
-  }, []);
+    const customCols: ColumnDef<Socio>[] = customFields
+      .filter((f) => !f.archived_at)
+      .map((field) => ({
+        id: `cf:${field.id}`,
+        accessorFn: (row) => {
+          const k = `${row.id}:${field.id}`;
+          const e = cfEditsRef.current;
+          return k in e ? e[k] : readFieldValue(field, valueMap.get(row.id)?.get(field.id));
+        },
+        header: field.name,
+        size: 150,
+        minSize: 70,
+        filterFn:
+          field.field_type === "boolean"
+            ? (row, id, value) => {
+                if (!value || value === "all") return true;
+                return String(row.getValue(id)) === value;
+              }
+            : "includesString",
+        cell: (ctx) => <CustomFieldCell cell={ctx} field={field} />,
+      }));
+
+    return [selectCol, ...fieldCols, ...customCols, actionsCol];
+  }, [customFields, valueMap]);
 
   const table = useReactTable({
     data: rows,
@@ -232,6 +323,9 @@ export function SociosGrid({
       setCellValue,
       isCellDirty,
       openDrawer,
+      getCustomValue,
+      setCustomValue,
+      isCustomDirty,
     } satisfies GridMeta,
   });
 
@@ -246,21 +340,50 @@ export function SociosGrid({
   });
 
   const totalWidth = table.getTotalSize();
-  const pendingCount = Object.keys(edits).length;
+  const cfPendingCount = Object.keys(cfEdits).length;
+  const pendingCount = Object.keys(edits).length + cfPendingCount;
   const selectedIds = Object.keys(rowSelection).filter((k) => rowSelection[k]);
 
   const handleSave = () => {
     if (pendingCount === 0) return;
-    saveMutation.mutate(edits, {
-      onSuccess: (n) => {
-        setEdits({});
-        toast.success(`${n} socio(s) guardado(s)`);
-      },
-      onError: (e) =>
-        toast.error("No se pudieron guardar los cambios", {
-          description: (e as Error).message,
-        }),
-    });
+    const onError = (e: unknown) =>
+      toast.error("No se pudieron guardar los cambios", {
+        description: (e as Error).message,
+      });
+
+    const saveCustom = () => {
+      if (cfPendingCount === 0) {
+        toast.success("Cambios guardados");
+        return;
+      }
+      const valueEdits: SocioValueEdit[] = Object.entries(cfEdits)
+        .map(([k, value]) => {
+          const [socioId, fieldId] = k.split(":");
+          const field = fieldsById.get(fieldId);
+          if (!field) return null;
+          return { socioId, field, value };
+        })
+        .filter((v): v is SocioValueEdit => !!v);
+      saveValuesMutation.mutate(valueEdits, {
+        onSuccess: () => {
+          setCfEdits({});
+          toast.success("Cambios guardados");
+        },
+        onError,
+      });
+    };
+
+    if (Object.keys(edits).length > 0) {
+      saveMutation.mutate(edits, {
+        onSuccess: () => {
+          setEdits({});
+          saveCustom();
+        },
+        onError,
+      });
+    } else {
+      saveCustom();
+    }
   };
 
   const handleDelete = () => {
@@ -346,7 +469,10 @@ export function SociosGrid({
               variant="ghost"
               size="sm"
               className="h-8 gap-1.5"
-              onClick={() => setEdits({})}
+              onClick={() => {
+                setEdits({});
+                setCfEdits({});
+              }}
             >
               <X className="h-3.5 w-3.5" />
               Descartar
@@ -359,7 +485,11 @@ export function SociosGrid({
               variant={pendingCount > 0 ? "default" : "outline"}
               className="h-8 gap-1.5"
               onClick={handleSave}
-              disabled={pendingCount === 0 || saveMutation.isPending}
+              disabled={
+                pendingCount === 0 ||
+                saveMutation.isPending ||
+                saveValuesMutation.isPending
+              }
             >
               <Save className="h-3.5 w-3.5" />
               Guardar{pendingCount > 0 ? ` (${pendingCount})` : ""}
