@@ -8,6 +8,8 @@ import {
   Users,
   ClipboardCheck,
   UserMinus,
+  Settings2,
+  HandCoins,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -15,10 +17,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { socioDisplayName, type Socio } from "@/lib/socios/socios-fields";
 import { useSociosViewPrefs } from "@/lib/socios/use-view-prefs";
+import {
+  useCustomFields,
+  useSocioCustomValues,
+} from "@/lib/custom-fields/use-custom-fields";
 import { SociosGrid } from "./SociosGrid";
 import { SocioCard } from "./SocioCard";
 import { SocioDrawer } from "./SocioDrawer";
 import { NuevoSocioDialog } from "./NuevoSocioDialog";
+import { ColumnsManagerDialog } from "@/components/custom-fields/ColumnsManagerDialog";
+import { AidsManagerDialog } from "@/components/aids/AidsManagerDialog";
 
 type View = "table" | "cards" | "board";
 
@@ -70,6 +78,12 @@ export function SociosWorkspace({
   const [drawerSocio, setDrawerSocio] = useState<Socio | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
+  const [columnsOpen, setColumnsOpen] = useState(false);
+  const [aidsOpen, setAidsOpen] = useState(false);
+
+  const { data: customFields = [] } = useCustomFields(cooperativeId, "socio");
+  const { data: valueMap } = useSocioCustomValues(cooperativeId);
+  const emptyValueMap = useMemo(() => new Map(), []);
 
   const metrics = useMemo(() => {
     const bajas = rows.filter((r) => r.baja || !r.activo).length;
@@ -106,6 +120,27 @@ export function SociosWorkspace({
           <p className="text-xs text-muted-foreground">
             Gestion administrativa de socios, ayudas y expedientes
           </p>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-9 gap-1.5"
+            onClick={() => setAidsOpen(true)}
+          >
+            <HandCoins className="h-4 w-4" />
+            Ayudas
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-9 gap-1.5"
+            onClick={() => setColumnsOpen(true)}
+          >
+            <Settings2 className="h-4 w-4" />
+            Columnas ERP
+          </Button>
         </div>
 
         <div className="flex items-center gap-2">
@@ -152,6 +187,8 @@ export function SociosWorkspace({
             cooperativeId={cooperativeId}
             canEdit={canEdit}
             userId={userId}
+            customFields={customFields}
+            valueMap={valueMap ?? emptyValueMap}
             sorting={prefs.sorting}
             onSortingChange={makeSetter("sorting")}
             columnFilters={prefs.columnFilters}
@@ -224,6 +261,22 @@ export function SociosWorkspace({
         userId={userId}
         onOpenChange={setCreateOpen}
         onCreated={openDrawer}
+      />
+
+      <ColumnsManagerDialog
+        open={columnsOpen}
+        cooperativeId={cooperativeId}
+        userId={userId}
+        canEdit={canEdit}
+        onOpenChange={setColumnsOpen}
+      />
+
+      <AidsManagerDialog
+        open={aidsOpen}
+        cooperativeId={cooperativeId}
+        userId={userId}
+        canEdit={canEdit}
+        onOpenChange={setAidsOpen}
       />
     </div>
   );
