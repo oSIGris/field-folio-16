@@ -15,6 +15,9 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { SocioExpedientes } from "@/components/aids/SocioExpedientes";
+import { useAuth } from "@/lib/auth/auth-context";
 import {
   Select,
   SelectContent,
@@ -47,6 +50,7 @@ export function SocioDrawer({
   onOpenChange,
   onSaved,
 }: Props) {
+  const { user } = useAuth();
   const [form, setForm] = useState<Partial<Socio>>({});
   const [saving, setSaving] = useState(false);
 
@@ -95,7 +99,14 @@ export function SocioDrawer({
           <SheetDescription>Ficha del socio</SheetDescription>
         </SheetHeader>
 
-        <div className="mt-4 space-y-3">
+        <Tabs defaultValue="datos" className="mt-4">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="datos">Datos</TabsTrigger>
+            <TabsTrigger value="expedientes">Expedientes</TabsTrigger>
+            <TabsTrigger value="docs">Documentación</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="datos" className="space-y-3">
           {SOCIO_FIELDS.map((field) => {
             const value = form[field.key];
             if (field.type === "boolean") {
@@ -160,23 +171,33 @@ export function SocioDrawer({
               </div>
             );
           })}
-        </div>
 
-        {canEdit && (
-          <SheetFooter className="mt-6">
-            <Button onClick={handleSave} disabled={saving} className="w-full">
-              {saving ? "Guardando..." : "Guardar cambios"}
-            </Button>
-          </SheetFooter>
-        )}
+            {canEdit && (
+              <SheetFooter className="mt-6">
+                <Button onClick={handleSave} disabled={saving} className="w-full">
+                  {saving ? "Guardando..." : "Guardar cambios"}
+                </Button>
+              </SheetFooter>
+            )}
+          </TabsContent>
 
-        <div className="mt-6">
-          <AttachmentsPanel
-            socio={socio}
-            cooperativeId={cooperativeId}
-            canEdit={canEdit}
-          />
-        </div>
+          <TabsContent value="expedientes">
+            <SocioExpedientes
+              socioId={socio.id}
+              cooperativeId={cooperativeId}
+              userId={user?.id ?? ""}
+              canEdit={canEdit}
+            />
+          </TabsContent>
+
+          <TabsContent value="docs">
+            <AttachmentsPanel
+              socio={socio}
+              cooperativeId={cooperativeId}
+              canEdit={canEdit}
+            />
+          </TabsContent>
+        </Tabs>
       </SheetContent>
     </Sheet>
   );
