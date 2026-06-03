@@ -528,6 +528,14 @@ export function SociosGrid({
         onOpenChange={setDrawerOpen}
         onSaved={() => setEdits({})}
       />
+
+      <NuevoSocioDialog
+        open={createOpen}
+        cooperativeId={cooperativeId}
+        userId={userId}
+        onOpenChange={setCreateOpen}
+        onCreated={openDrawer}
+      />
     </div>
   );
 }
