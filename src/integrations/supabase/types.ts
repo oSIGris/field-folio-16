@@ -7,6 +7,8 @@ export type Json =
   | Json[]
 
 export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "14.5"
   }
@@ -122,132 +124,75 @@ export type Database = {
       socios: {
         Row: {
           activo: boolean
-          alta: boolean
           apellidos: string | null
-          ayudas_borras: boolean
-          baja: boolean
           codigo_postal: string | null
           codigo_socio: string | null
-          cooperativa_codigo: string | null
           cooperative_id: string
           created_at: string
           created_by: string | null
-          cuaderno: boolean
-          deleted_at: string | null
           direccion: string | null
           email: string | null
           fecha_alta: string | null
-          fecha_aviso: string | null
           fecha_baja: string | null
-          finaliza: boolean
           iban: string | null
           id: string
           municipio: string | null
           nif: string | null
-          nif_cif: string | null
           nombre: string | null
           notas: string | null
-          observaciones: string | null
-          observaciones_2025: string | null
-          p6_p7: string | null
-          poblacion: string | null
           provincia: string | null
           razon_social: string | null
-          registra: boolean
-          subvencion: boolean
           telefono: string | null
-          telefono_1: string | null
-          telefono_2: string | null
           tipo: Database["public"]["Enums"]["socio_tipo"]
-          traspaso: boolean
           updated_at: string
-          updated_by: string | null
         }
         Insert: {
           activo?: boolean
-          alta?: boolean
           apellidos?: string | null
-          ayudas_borras?: boolean
-          baja?: boolean
           codigo_postal?: string | null
           codigo_socio?: string | null
-          cooperativa_codigo?: string | null
           cooperative_id: string
           created_at?: string
           created_by?: string | null
-          cuaderno?: boolean
-          deleted_at?: string | null
           direccion?: string | null
           email?: string | null
           fecha_alta?: string | null
-          fecha_aviso?: string | null
           fecha_baja?: string | null
-          finaliza?: boolean
           iban?: string | null
           id?: string
           municipio?: string | null
           nif?: string | null
-          nif_cif?: string | null
           nombre?: string | null
           notas?: string | null
-          observaciones?: string | null
-          observaciones_2025?: string | null
-          p6_p7?: string | null
-          poblacion?: string | null
           provincia?: string | null
           razon_social?: string | null
-          registra?: boolean
-          subvencion?: boolean
           telefono?: string | null
-          telefono_1?: string | null
-          telefono_2?: string | null
           tipo?: Database["public"]["Enums"]["socio_tipo"]
-          traspaso?: boolean
           updated_at?: string
-          updated_by?: string | null
         }
         Update: {
           activo?: boolean
-          alta?: boolean
           apellidos?: string | null
-          ayudas_borras?: boolean
-          baja?: boolean
           codigo_postal?: string | null
           codigo_socio?: string | null
-          cooperativa_codigo?: string | null
           cooperative_id?: string
           created_at?: string
           created_by?: string | null
-          cuaderno?: boolean
-          deleted_at?: string | null
           direccion?: string | null
           email?: string | null
           fecha_alta?: string | null
-          fecha_aviso?: string | null
           fecha_baja?: string | null
-          finaliza?: boolean
           iban?: string | null
           id?: string
           municipio?: string | null
           nif?: string | null
-          nif_cif?: string | null
           nombre?: string | null
           notas?: string | null
-          observaciones?: string | null
-          observaciones_2025?: string | null
-          p6_p7?: string | null
-          poblacion?: string | null
           provincia?: string | null
           razon_social?: string | null
-          registra?: boolean
-          subvencion?: boolean
           telefono?: string | null
-          telefono_1?: string | null
-          telefono_2?: string | null
           tipo?: Database["public"]["Enums"]["socio_tipo"]
-          traspaso?: boolean
           updated_at?: string
-          updated_by?: string | null
         }
         Relationships: [
           {
@@ -256,54 +201,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "cooperatives"
             referencedColumns: ["id"]
-          },
-        ]
-      }
-      socio_user_access: {
-        Row: {
-          cooperative_id: string
-          created_at: string
-          id: string
-          invited_by: string | null
-          socio_id: string
-          status: Database["public"]["Enums"]["socio_user_status"]
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          cooperative_id: string
-          created_at?: string
-          id?: string
-          invited_by?: string | null
-          socio_id: string
-          status?: Database["public"]["Enums"]["socio_user_status"]
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          cooperative_id?: string
-          created_at?: string
-          id?: string
-          invited_by?: string | null
-          socio_id?: string
-          status?: Database["public"]["Enums"]["socio_user_status"]
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "socio_user_access_cooperative_id_fkey"
-            columns: ["cooperative_id"]
-            isOneToOne: false
-            referencedRelation: "cooperatives"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "socio_user_access_socio_coop_fkey"
-            columns: ["socio_id", "cooperative_id"]
-            isOneToOne: false
-            referencedRelation: "socios"
-            referencedColumns: ["id", "cooperative_id"]
           },
         ]
       }
@@ -355,15 +252,10 @@ export type Database = {
         Args: { _cooperative_id: string; _user_id: string }
         Returns: boolean
       }
-      is_socio_user: {
-        Args: { _socio_id: string; _user_id: string }
-        Returns: boolean
-      }
     }
     Enums: {
       org_role: "admin" | "gestor" | "consulta"
       socio_tipo: "persona_fisica" | "persona_juridica"
-      socio_user_status: "active" | "invited" | "disabled"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -485,7 +377,7 @@ export type CompositeTypes<
 }
   ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
   : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
-    ? DatabaseWithoutInternals["public"]["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never
 
 export const Constants = {
@@ -493,7 +385,6 @@ export const Constants = {
     Enums: {
       org_role: ["admin", "gestor", "consulta"],
       socio_tipo: ["persona_fisica", "persona_juridica"],
-      socio_user_status: ["active", "invited", "disabled"],
     },
   },
 } as const
