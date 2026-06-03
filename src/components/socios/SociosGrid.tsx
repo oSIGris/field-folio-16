@@ -42,7 +42,6 @@ import {
   type Socio,
 } from "@/lib/socios/socios-fields";
 import {
-  useCreateSocio,
   useDeleteSocios,
   useSaveSocios,
 } from "@/lib/socios/use-socios";
@@ -368,7 +367,7 @@ export function SociosGrid({
           )}
 
           {canEdit && (
-            <Button size="sm" className="h-8 gap-1.5" onClick={handleCreate}>
+            <Button size="sm" className="h-8 gap-1.5" onClick={() => setCreateOpen(true)}>
               <Plus className="h-3.5 w-3.5" />
               Nuevo socio
             </Button>
