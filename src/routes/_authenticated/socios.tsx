@@ -4,7 +4,7 @@ import { Loader2 } from "lucide-react";
 import { useAuth } from "@/lib/auth/auth-context";
 import { useWorkspace } from "@/lib/workspace/workspace-context";
 import { useSocios } from "@/lib/socios/use-socios";
-import { SociosGrid } from "@/components/socios/SociosGrid";
+import { SociosWorkspace } from "@/components/socios/SociosWorkspace";
 
 export const Route = createFileRoute("/_authenticated/socios")({
   component: SociosPage,
@@ -33,7 +33,7 @@ function SociosPage() {
   }
 
   return (
-    <SociosGrid
+    <SociosWorkspace
       rows={data ?? []}
       cooperativeId={cooperativeId}
       canEdit={canEdit}
