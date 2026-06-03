@@ -28,7 +28,7 @@ export function useSocios(cooperativeId: string) {
         .order("created_at", { ascending: true })
         .limit(5000);
       if (error) throw error;
-      return data ?? [];
+      return (data ?? []) as Socio[];
     },
   });
 }
@@ -84,7 +84,7 @@ export function useCreateSocio(cooperativeId: string) {
         .select("*")
         .single();
       if (error) throw error;
-      return data;
+      return data as Socio;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: sociosQueryKey(cooperativeId) });
