@@ -210,15 +210,24 @@ export function socioValuesKey(cooperativeId: string) {
   return ["custom_field_values", "socio", cooperativeId] as const;
 }
 
-export function useSocioCustomValues(cooperativeId: string) {
+export function useSocioCustomValues(
+  cooperativeId: string,
+  enabled = true,
+) {
   return useQuery({
     queryKey: socioValuesKey(cooperativeId),
-    enabled: !!cooperativeId,
+    // Only fetch when there is at least one socio custom field; otherwise this
+    // would pull tens of thousands of empty value rows for nothing.
+    enabled: !!cooperativeId && enabled,
     staleTime: 60_000,
+    gcTime: 5 * 60_000,
+    refetchOnWindowFocus: false,
     queryFn: async (): Promise<SocioValueMap> => {
       const { data, error } = await supabase
         .from("custom_field_values")
-        .select("*")
+        .select(
+          "custom_field_id,socio_id,value_text,value_number,value_date,value_boolean,value_json",
+        )
         .eq("cooperative_id", cooperativeId)
         .not("socio_id", "is", null)
         .limit(50000);
@@ -231,7 +240,7 @@ export function useSocioCustomValues(cooperativeId: string) {
           inner = new Map();
           map.set(row.socio_id, inner);
         }
-        inner.set(row.custom_field_id, row);
+        inner.set(row.custom_field_id, row as CustomFieldValue);
       }
       return map;
     },

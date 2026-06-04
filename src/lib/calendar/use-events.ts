@@ -31,18 +31,28 @@ export interface EventInput {
   aid_application_id: string | null;
 }
 
-export function useEvents(cooperativeId: string) {
+/** Lower bound (days back) for the events window loaded by default. */
+const EVENTS_WINDOW_DAYS_BACK = 30;
+
+export function useEvents(cooperativeId: string, daysBack = EVENTS_WINDOW_DAYS_BACK) {
   return useQuery({
-    queryKey: ["calendar_events", cooperativeId],
+    queryKey: ["calendar_events", cooperativeId, daysBack],
     enabled: !!cooperativeId,
-    staleTime: 20_000,
+    staleTime: 60_000,
+    gcTime: 5 * 60_000,
+    refetchOnWindowFocus: false,
     queryFn: async (): Promise<CalendarEvent[]> => {
+      const from = new Date(
+        Date.now() - daysBack * 86_400_000,
+      ).toISOString();
       const { data, error } = await supabase
         .from("calendar_events")
         .select("*")
         .eq("cooperative_id", cooperativeId)
         .is("archived_at", null)
-        .order("starts_at", { ascending: true });
+        .gte("starts_at", from)
+        .order("starts_at", { ascending: true })
+        .limit(500);
       if (error) throw error;
       return data ?? [];
     },
