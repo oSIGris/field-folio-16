@@ -64,11 +64,13 @@ export function SociosWorkspace({
   cooperativeId,
   canEdit,
   userId,
+  loadingMore = false,
 }: {
   rows: Socio[];
   cooperativeId: string;
   canEdit: boolean;
   userId: string;
+  loadingMore?: boolean;
 }) {
   const { prefs, makeSetter } = useSociosViewPrefs(userId);
   const view = prefs.view;
@@ -125,6 +127,13 @@ export function SociosWorkspace({
             Gestion administrativa de socios, ayudas y expedientes
           </p>
         </div>
+
+        {loadingMore && (
+          <span className="flex items-center gap-1.5 rounded-full border bg-background px-2.5 py-1 text-[11px] text-muted-foreground">
+            <Loader2 className="h-3 w-3 animate-spin" />
+            Cargando socios…
+          </span>
+        )}
 
         <div className="flex items-center gap-2">
           <Button
