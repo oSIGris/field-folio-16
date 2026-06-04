@@ -135,11 +135,13 @@ export function useSetRuleStatus(cooperativeId: string, userId: string) {
       id: string;
       status: AutomationRuleStatus;
     }) => {
-      const patch: Record<string, unknown> = { status, updated_by: userId };
-      if (status === "archivada") {
-        patch.archived_at = new Date().toISOString();
-        patch.archived_by = userId;
-      }
+      const patch: Database["public"]["Tables"]["automation_rules"]["Update"] = {
+        status,
+        updated_by: userId,
+        ...(status === "archivada"
+          ? { archived_at: new Date().toISOString(), archived_by: userId }
+          : {}),
+      };
       const { error } = await supabase
         .from("automation_rules")
         .update(patch)
