@@ -544,16 +544,20 @@ export function SociosGrid({
                 {hg.headers.map((header) => {
                   const canSort = header.column.getCanSort();
                   const sorted = header.column.getIsSorted();
+                  const HeaderTag = canSort ? "button" : "div";
                   return (
                     <div
                       key={header.id}
                       className="relative flex items-center border-r border-grid-line text-xs font-semibold text-foreground/80"
                       style={{ width: header.getSize() }}
                     >
-                      <button
-                        type="button"
-                        disabled={!canSort}
-                        onClick={header.column.getToggleSortingHandler()}
+                      <HeaderTag
+                        {...(canSort
+                          ? {
+                              type: "button" as const,
+                              onClick: header.column.getToggleSortingHandler(),
+                            }
+                          : {})}
                         className={cn(
                           "flex h-full w-full items-center gap-1 truncate px-2 text-left",
                           canSort && "hover:bg-accent/40",
@@ -573,7 +577,7 @@ export function SociosGrid({
                           ) : (
                             <ChevronsUpDown className="h-3 w-3 shrink-0 opacity-30" />
                           ))}
-                      </button>
+                      </HeaderTag>
                       {header.column.getCanResize() && (
                         <div
                           onMouseDown={header.getResizeHandler()}
