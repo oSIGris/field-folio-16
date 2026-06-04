@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Plus, Mail } from "lucide-react";
 import { toast } from "sonner";
 
@@ -59,10 +59,6 @@ export function EmailsTab({
   const setStatus = useSetDraftStatus(cooperativeId, userId);
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState<EmailDraftInput>(EMPTY);
-
-  useEffect(() => {
-    if (open) return;
-  }, [open]);
 
   const set = <K extends keyof EmailDraftInput>(k: K, v: EmailDraftInput[K]) =>
     setForm((p) => ({ ...p, [k]: v }));
