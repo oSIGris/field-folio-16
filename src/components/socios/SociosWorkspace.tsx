@@ -83,7 +83,10 @@ export function SociosWorkspace({
   const [aidsOpen, setAidsOpen] = useState(false);
 
   const { data: customFields = [] } = useCustomFields(cooperativeId, "socio");
-  const { data: valueMap } = useSocioCustomValues(cooperativeId);
+  const { data: valueMap } = useSocioCustomValues(
+    cooperativeId,
+    customFields.length > 0,
+  );
   const emptyValueMap = useMemo<SocioValueMap>(() => new Map(), []);
 
   const metrics = useMemo(() => {
