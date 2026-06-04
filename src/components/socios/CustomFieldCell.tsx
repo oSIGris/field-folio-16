@@ -1,5 +1,4 @@
 import { memo } from "react";
-import type { CellContext } from "@tanstack/react-table";
 
 import { cn } from "@/lib/utils";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -7,21 +6,23 @@ import {
   parseOptions,
   type CustomField,
 } from "@/lib/custom-fields/use-custom-fields";
-import type { Socio } from "@/lib/socios/socios-fields";
-import type { GridMeta } from "./grid-types";
 
 function CustomFieldCellInner({
-  cell,
+  socioId,
   field,
+  value,
+  dirty,
+  canEdit,
+  setCustomValue,
 }: {
-  cell: CellContext<Socio, unknown>;
+  socioId: string;
   field: CustomField;
+  value: unknown;
+  dirty: boolean;
+  canEdit: boolean;
+  setCustomValue: (socioId: string, field: CustomField, value: unknown) => void;
 }) {
-  const meta = cell.table.options.meta as GridMeta;
-  const socioId = cell.row.original.id;
-  const value = meta.getCustomValue(socioId, field);
-  const dirty = meta.isCustomDirty(socioId, field.id);
-  const disabled = !meta.canEdit;
+  const disabled = !canEdit;
 
   const base = cn(
     "h-full w-full bg-transparent px-2 text-[13px] outline-none focus:bg-accent/40",
@@ -39,7 +40,7 @@ function CustomFieldCellInner({
         <Checkbox
           checked={!!value}
           disabled={disabled}
-          onCheckedChange={(c) => meta.setCustomValue(socioId, field, !!c)}
+          onCheckedChange={(c) => setCustomValue(socioId, field, !!c)}
         />
       </div>
     );
@@ -52,7 +53,7 @@ function CustomFieldCellInner({
         className={cn(base, "cursor-pointer appearance-none")}
         value={(value as string) ?? ""}
         disabled={disabled}
-        onChange={(e) => meta.setCustomValue(socioId, field, e.target.value || null)}
+        onChange={(e) => setCustomValue(socioId, field, e.target.value || null)}
       >
         <option value="">-</option>
         {options.map((o) => (
@@ -71,7 +72,7 @@ function CustomFieldCellInner({
       const next = selected.includes(v)
         ? selected.filter((x) => x !== v)
         : [...selected, v];
-      meta.setCustomValue(socioId, field, next);
+      setCustomValue(socioId, field, next);
     };
     return (
       <div
@@ -114,7 +115,7 @@ function CustomFieldCellInner({
       value={value === null || value === undefined ? "" : (value as string | number)}
       disabled={disabled}
       onChange={(e) =>
-        meta.setCustomValue(
+        setCustomValue(
           socioId,
           field,
           isNumber ? (e.target.value === "" ? null : Number(e.target.value)) : e.target.value || null,
