@@ -254,7 +254,20 @@ export function SociosGrid({
               return String(row.getValue(id)) === value;
             }
           : "includesString",
-      cell: (ctx) => <EditableCell cell={ctx} field={field} />,
+      cell: (ctx) => {
+        const meta = ctx.table.options.meta as GridMeta;
+        const id = ctx.row.original.id;
+        return (
+          <EditableCell
+            id={id}
+            field={field}
+            value={ctx.getValue()}
+            dirty={meta.isCellDirty(id, field.key)}
+            canEdit={meta.canEdit}
+            setCellValue={meta.setCellValue}
+          />
+        );
+      },
     }));
 
     const actionsCol: ColumnDef<Socio> = {
@@ -296,7 +309,20 @@ export function SociosGrid({
                 return String(row.getValue(id)) === value;
               }
             : "includesString",
-        cell: (ctx) => <CustomFieldCell cell={ctx} field={field} />,
+        cell: (ctx) => {
+          const meta = ctx.table.options.meta as GridMeta;
+          const socioId = ctx.row.original.id;
+          return (
+            <CustomFieldCell
+              socioId={socioId}
+              field={field}
+              value={meta.getCustomValue(socioId, field)}
+              dirty={meta.isCustomDirty(socioId, field.id)}
+              canEdit={meta.canEdit}
+              setCustomValue={meta.setCustomValue}
+            />
+          );
+        },
       }));
 
     return [selectCol, ...fieldCols, ...customCols, actionsCol];
