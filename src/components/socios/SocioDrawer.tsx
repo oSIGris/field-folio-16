@@ -17,6 +17,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SocioExpedientes } from "@/components/aids/SocioExpedientes";
+import { SocioTasksSection } from "@/components/calendar/SocioTasksSection";
 import { useAuth } from "@/lib/auth/auth-context";
 import {
   Select,
@@ -100,8 +101,9 @@ export function SocioDrawer({
         </SheetHeader>
 
         <Tabs defaultValue="datos" className="mt-4">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="datos">Datos</TabsTrigger>
+            <TabsTrigger value="tareas">Tareas</TabsTrigger>
             <TabsTrigger value="expedientes">Expedientes</TabsTrigger>
             <TabsTrigger value="docs">Documentación</TabsTrigger>
           </TabsList>
@@ -179,6 +181,15 @@ export function SocioDrawer({
                 </Button>
               </SheetFooter>
             )}
+          </TabsContent>
+
+          <TabsContent value="tareas">
+            <SocioTasksSection
+              socioId={socio.id}
+              cooperativeId={cooperativeId}
+              userId={user?.id ?? ""}
+              canEdit={canEdit}
+            />
           </TabsContent>
 
           <TabsContent value="expedientes">
