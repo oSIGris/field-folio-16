@@ -1,23 +1,25 @@
 import { memo } from "react";
-import type { CellContext } from "@tanstack/react-table";
 
 import { cn } from "@/lib/utils";
 import { Checkbox } from "@/components/ui/checkbox";
 import { TIPO_OPTIONS, type FieldDef, type Socio } from "@/lib/socios/socios-fields";
-import type { GridMeta } from "./grid-types";
 
 function EditableCellInner({
-  cell,
+  id,
   field,
+  value,
+  dirty,
+  canEdit,
+  setCellValue,
 }: {
-  cell: CellContext<Socio, unknown>;
+  id: string;
   field: FieldDef;
+  value: unknown;
+  dirty: boolean;
+  canEdit: boolean;
+  setCellValue: (id: string, key: keyof Socio, value: unknown) => void;
 }) {
-  const meta = cell.table.options.meta as GridMeta;
-  const id = cell.row.original.id;
-  const value = cell.getValue();
-  const dirty = meta.isCellDirty(id, field.key);
-  const disabled = !meta.canEdit;
+  const disabled = !canEdit;
 
   const base = cn(
     "h-full w-full bg-transparent px-2 text-[13px] outline-none focus:bg-accent/40",
@@ -32,7 +34,7 @@ function EditableCellInner({
         <Checkbox
           checked={!!value}
           disabled={disabled}
-          onCheckedChange={(c) => meta.setCellValue(id, field.key, !!c)}
+          onCheckedChange={(c) => setCellValue(id, field.key, !!c)}
         />
       </div>
     );
@@ -44,7 +46,7 @@ function EditableCellInner({
         className={cn(base, "cursor-pointer appearance-none")}
         value={(value as string) ?? ""}
         disabled={disabled}
-        onChange={(e) => meta.setCellValue(id, field.key, e.target.value)}
+        onChange={(e) => setCellValue(id, field.key, e.target.value)}
       >
         {(field.options ?? TIPO_OPTIONS).map((o) => (
           <option key={o.value} value={o.value}>
@@ -61,7 +63,7 @@ function EditableCellInner({
       className={base}
       value={(value as string) ?? ""}
       disabled={disabled}
-      onChange={(e) => meta.setCellValue(id, field.key, e.target.value || null)}
+      onChange={(e) => setCellValue(id, field.key, e.target.value || null)}
     />
   );
 }
