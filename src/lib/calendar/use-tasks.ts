@@ -52,7 +52,9 @@ export function useTasks(cooperativeId: string, socioId?: string) {
   return useQuery({
     queryKey: ["tasks", cooperativeId, socioId ?? "all"],
     enabled: !!cooperativeId,
-    staleTime: 20_000,
+    staleTime: 60_000,
+    gcTime: 5 * 60_000,
+    refetchOnWindowFocus: false,
     queryFn: async (): Promise<Task[]> => {
       let q = supabase
         .from("tasks")
@@ -62,7 +64,8 @@ export function useTasks(cooperativeId: string, socioId?: string) {
       if (socioId) q = q.eq("socio_id", socioId);
       const { data, error } = await q
         .order("due_date", { ascending: true, nullsFirst: false })
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: false })
+        .limit(2000);
       if (error) throw error;
       return data ?? [];
     },
