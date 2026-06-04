@@ -13,7 +13,8 @@ export const Route = createFileRoute("/_authenticated/socios")({
 function SociosPage() {
   const { user } = useAuth();
   const { cooperativeId, canEdit } = useWorkspace();
-  const { data, isLoading, isError, error } = useSocios(cooperativeId);
+  const { data, isLoading, isError, error, hasNextPage, isFetchingNextPage } =
+    useSocios(cooperativeId);
 
   if (isLoading) {
     return <SociosSkeleton />;
@@ -33,6 +34,7 @@ function SociosPage() {
       cooperativeId={cooperativeId}
       canEdit={canEdit}
       userId={user!.id}
+      loadingMore={hasNextPage || isFetchingNextPage}
     />
   );
 }
