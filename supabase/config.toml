@@ -1,1 +1,4 @@
 project_id = "sxkecfeosxodicpocvzc"
+
+[functions.erp-ai-assistant]
+verify_jwt = true

@@ -11,6 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
+import { NotificationBell } from "./NotificationBell";
 
 const ROLE_LABEL: Record<string, string> = {
   admin: "Administrador",
@@ -55,7 +56,9 @@ export function Topbar() {
         </span>
       </div>
 
-      <DropdownMenu>
+      <div className="flex items-center gap-1">
+        <NotificationBell />
+        <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="sm" className="h-8 gap-2">
             <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-[11px] font-semibold text-primary-foreground">
@@ -74,7 +77,8 @@ export function Topbar() {
             Cerrar sesión
           </DropdownMenuItem>
         </DropdownMenuContent>
-      </DropdownMenu>
+        </DropdownMenu>
+      </div>
     </header>
   );
 }

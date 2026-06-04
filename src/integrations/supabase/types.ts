@@ -14,6 +14,111 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_action_proposals: {
+        Row: {
+          conversation_id: string | null
+          cooperative_id: string
+          created_at: string
+          decided_at: string | null
+          decided_by: string | null
+          description: string | null
+          id: string
+          kind: string
+          message_id: string | null
+          payload: Json
+          status: Database["public"]["Enums"]["ai_proposal_status"]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          conversation_id?: string | null
+          cooperative_id: string
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          description?: string | null
+          id?: string
+          kind: string
+          message_id?: string | null
+          payload?: Json
+          status?: Database["public"]["Enums"]["ai_proposal_status"]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          conversation_id?: string | null
+          cooperative_id?: string
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          description?: string | null
+          id?: string
+          kind?: string
+          message_id?: string | null
+          payload?: Json
+          status?: Database["public"]["Enums"]["ai_proposal_status"]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      ai_conversations: {
+        Row: {
+          archived_at: string | null
+          cooperative_id: string
+          created_at: string
+          id: string
+          title: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          archived_at?: string | null
+          cooperative_id: string
+          created_at?: string
+          id?: string
+          title?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          archived_at?: string | null
+          cooperative_id?: string
+          created_at?: string
+          id?: string
+          title?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      ai_messages: {
+        Row: {
+          content: string
+          conversation_id: string
+          cooperative_id: string
+          created_at: string
+          id: string
+          role: string
+        }
+        Insert: {
+          content?: string
+          conversation_id: string
+          cooperative_id: string
+          created_at?: string
+          id?: string
+          role: string
+        }
+        Update: {
+          content?: string
+          conversation_id?: string
+          cooperative_id?: string
+          created_at?: string
+          id?: string
+          role?: string
+        }
+        Relationships: []
+      }
       aid_applications: {
         Row: {
           aid_type_id: string | null
@@ -163,6 +268,147 @@ export type Database = {
           id?: string
           name?: string
           sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      automation_rules: {
+        Row: {
+          archived_at: string | null
+          archived_by: string | null
+          channel: string
+          config: Json
+          cooperative_id: string
+          create_email_draft: boolean
+          created_at: string
+          created_by: string | null
+          days_before: number
+          id: string
+          last_run_at: string | null
+          name: string
+          rule_type: Database["public"]["Enums"]["automation_rule_type"]
+          status: Database["public"]["Enums"]["automation_rule_status"]
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          archived_at?: string | null
+          archived_by?: string | null
+          channel?: string
+          config?: Json
+          cooperative_id: string
+          create_email_draft?: boolean
+          created_at?: string
+          created_by?: string | null
+          days_before?: number
+          id?: string
+          last_run_at?: string | null
+          name: string
+          rule_type: Database["public"]["Enums"]["automation_rule_type"]
+          status?: Database["public"]["Enums"]["automation_rule_status"]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          archived_at?: string | null
+          archived_by?: string | null
+          channel?: string
+          config?: Json
+          cooperative_id?: string
+          create_email_draft?: boolean
+          created_at?: string
+          created_by?: string | null
+          days_before?: number
+          id?: string
+          last_run_at?: string | null
+          name?: string
+          rule_type?: Database["public"]["Enums"]["automation_rule_type"]
+          status?: Database["public"]["Enums"]["automation_rule_status"]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      automation_runs: {
+        Row: {
+          cooperative_id: string
+          created_at: string
+          id: string
+          ran_at: string
+          result: Json
+          rule_id: string
+          status: string
+        }
+        Insert: {
+          cooperative_id: string
+          created_at?: string
+          id?: string
+          ran_at?: string
+          result?: Json
+          rule_id: string
+          status?: string
+        }
+        Update: {
+          cooperative_id?: string
+          created_at?: string
+          id?: string
+          ran_at?: string
+          result?: Json
+          rule_id?: string
+          status?: string
+        }
+        Relationships: []
+      }
+      calendar_events: {
+        Row: {
+          aid_application_id: string | null
+          all_day: boolean
+          archived_at: string | null
+          archived_by: string | null
+          cooperative_id: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          ends_at: string | null
+          event_type: Database["public"]["Enums"]["calendar_event_type"]
+          id: string
+          socio_id: string | null
+          starts_at: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          aid_application_id?: string | null
+          all_day?: boolean
+          archived_at?: string | null
+          archived_by?: string | null
+          cooperative_id: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          ends_at?: string | null
+          event_type?: Database["public"]["Enums"]["calendar_event_type"]
+          id?: string
+          socio_id?: string | null
+          starts_at: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          aid_application_id?: string | null
+          all_day?: boolean
+          archived_at?: string | null
+          archived_by?: string | null
+          cooperative_id?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          ends_at?: string | null
+          event_type?: Database["public"]["Enums"]["calendar_event_type"]
+          id?: string
+          socio_id?: string | null
+          starts_at?: string
+          title?: string
           updated_at?: string
         }
         Relationships: []
@@ -317,6 +563,129 @@ export type Database = {
           sort_order?: number
           updated_at?: string
           visible?: boolean
+        }
+        Relationships: []
+      }
+      email_drafts: {
+        Row: {
+          archived_at: string | null
+          body: string
+          cooperative_id: string
+          created_at: string
+          created_by: string | null
+          id: string
+          recipient: string | null
+          socio_id: string | null
+          status: Database["public"]["Enums"]["email_draft_status"]
+          subject: string
+          task_id: string | null
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          archived_at?: string | null
+          body?: string
+          cooperative_id: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          recipient?: string | null
+          socio_id?: string | null
+          status?: Database["public"]["Enums"]["email_draft_status"]
+          subject?: string
+          task_id?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          archived_at?: string | null
+          body?: string
+          cooperative_id?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          recipient?: string | null
+          socio_id?: string | null
+          status?: Database["public"]["Enums"]["email_draft_status"]
+          subject?: string
+          task_id?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      email_templates: {
+        Row: {
+          archived_at: string | null
+          archived_by: string | null
+          body: string
+          cooperative_id: string
+          created_at: string
+          created_by: string | null
+          id: string
+          name: string
+          subject: string
+          updated_at: string
+        }
+        Insert: {
+          archived_at?: string | null
+          archived_by?: string | null
+          body?: string
+          cooperative_id: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          name: string
+          subject?: string
+          updated_at?: string
+        }
+        Update: {
+          archived_at?: string | null
+          archived_by?: string | null
+          body?: string
+          cooperative_id?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          name?: string
+          subject?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          body: string | null
+          cooperative_id: string
+          created_at: string
+          id: string
+          link: string | null
+          read: boolean
+          read_at: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          body?: string | null
+          cooperative_id: string
+          created_at?: string
+          id?: string
+          link?: string | null
+          read?: boolean
+          read_at?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          body?: string | null
+          cooperative_id?: string
+          created_at?: string
+          id?: string
+          link?: string | null
+          read?: boolean
+          read_at?: string | null
+          title?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -603,6 +972,69 @@ export type Database = {
           },
         ]
       }
+      tasks: {
+        Row: {
+          aid_application_id: string | null
+          archived_at: string | null
+          archived_by: string | null
+          assigned_to: string | null
+          completed_at: string | null
+          cooperative_id: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          due_date: string | null
+          id: string
+          priority: Database["public"]["Enums"]["task_priority"]
+          reminder_at: string | null
+          socio_id: string | null
+          status: Database["public"]["Enums"]["task_status"]
+          title: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          aid_application_id?: string | null
+          archived_at?: string | null
+          archived_by?: string | null
+          assigned_to?: string | null
+          completed_at?: string | null
+          cooperative_id: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          priority?: Database["public"]["Enums"]["task_priority"]
+          reminder_at?: string | null
+          socio_id?: string | null
+          status?: Database["public"]["Enums"]["task_status"]
+          title: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          aid_application_id?: string | null
+          archived_at?: string | null
+          archived_by?: string | null
+          assigned_to?: string | null
+          completed_at?: string | null
+          cooperative_id?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          priority?: Database["public"]["Enums"]["task_priority"]
+          reminder_at?: string | null
+          socio_id?: string | null
+          status?: Database["public"]["Enums"]["task_status"]
+          title?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       user_preferences: {
         Row: {
           created_at: string
@@ -657,6 +1089,7 @@ export type Database = {
       }
     }
     Enums: {
+      ai_proposal_status: "pending" | "accepted" | "rejected" | "executed"
       aid_application_status:
         | "pendiente"
         | "en_revision"
@@ -666,6 +1099,19 @@ export type Database = {
         | "aprobado"
         | "rechazado"
         | "finalizado"
+      automation_rule_status: "activa" | "pausada" | "archivada"
+      automation_rule_type:
+        | "avisar_antes"
+        | "falta_documentacion"
+        | "expediente_parado"
+        | "subvencion_sin_expediente"
+        | "fecha_aviso_socio"
+      calendar_event_type:
+        | "vencimiento"
+        | "recordatorio"
+        | "cita"
+        | "llamada"
+        | "interno"
       custom_field_scope: "socio" | "aid_application"
       custom_field_type:
         | "text"
@@ -677,9 +1123,22 @@ export type Database = {
         | "currency"
         | "percentage"
         | "long_text"
+      email_draft_status:
+        | "draft"
+        | "pending_approval"
+        | "approved"
+        | "cancelled"
+        | "sent"
       org_role: "admin" | "gestor" | "consulta"
       socio_tipo: "persona_fisica" | "persona_juridica"
       socio_user_status: "active" | "invited" | "disabled"
+      task_priority: "baja" | "normal" | "alta" | "urgente"
+      task_status:
+        | "pendiente"
+        | "en_curso"
+        | "bloqueada"
+        | "hecha"
+        | "cancelada"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -807,6 +1266,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      ai_proposal_status: ["pending", "accepted", "rejected", "executed"],
       aid_application_status: [
         "pendiente",
         "en_revision",
@@ -816,6 +1276,21 @@ export const Constants = {
         "aprobado",
         "rechazado",
         "finalizado",
+      ],
+      automation_rule_status: ["activa", "pausada", "archivada"],
+      automation_rule_type: [
+        "avisar_antes",
+        "falta_documentacion",
+        "expediente_parado",
+        "subvencion_sin_expediente",
+        "fecha_aviso_socio",
+      ],
+      calendar_event_type: [
+        "vencimiento",
+        "recordatorio",
+        "cita",
+        "llamada",
+        "interno",
       ],
       custom_field_scope: ["socio", "aid_application"],
       custom_field_type: [
@@ -829,9 +1304,18 @@ export const Constants = {
         "percentage",
         "long_text",
       ],
+      email_draft_status: [
+        "draft",
+        "pending_approval",
+        "approved",
+        "cancelled",
+        "sent",
+      ],
       org_role: ["admin", "gestor", "consulta"],
       socio_tipo: ["persona_fisica", "persona_juridica"],
       socio_user_status: ["active", "invited", "disabled"],
+      task_priority: ["baja", "normal", "alta", "urgente"],
+      task_status: ["pendiente", "en_curso", "bloqueada", "hecha", "cancelada"],
     },
   },
 } as const

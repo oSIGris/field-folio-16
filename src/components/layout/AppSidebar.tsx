@@ -1,11 +1,12 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { LayoutDashboard, Users, Sprout } from "lucide-react";
+import { LayoutDashboard, Users, Sprout, CalendarDays } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
 const NAV = [
   { to: "/dashboard", label: "Panel", icon: LayoutDashboard },
   { to: "/socios", label: "Socios", icon: Users },
+  { to: "/calendario", label: "Calendario", icon: CalendarDays },
 ] as const;
 
 export function AppSidebar() {
